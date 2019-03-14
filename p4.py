@@ -1,3 +1,9 @@
+# Cole Slugget, Kayla Wheeler
+# CSCI 442 - Computer Vision
+# Following a Line Assignment
+# March 14, 2019
+
+
 # import the necessary packages
 from picamera.array import PiRGBArray
 from picamera import PiCamera
@@ -14,6 +20,7 @@ BODY = 0
 HEADTILT = 4
 HEADTURN = 3
 
+#function to brighten the image
 def brighten(img, value = 70):
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     h, s, v = cv2.split(hsv)
@@ -26,9 +33,7 @@ def brighten(img, value = 70):
     img = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
     return img
 
-##def sendCommand(x):
-##    if(x == '8'):
-##        tango.setTarget(MOTOR, 6800)
+
 class KeyControl():
     def __init__(self,win):
         self.root = win
@@ -101,8 +106,8 @@ keys.head('d')
 
 # capture frames from the camera
 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-    # grab the raw NumPy array representing the image, then initialize the timestamp
-    # and occupied/unoccupied text
+   
+   #takes the frame of the camera and does the necessary converting to find the rectangles/squares
     image = frame.array
     pic = brighten(image)
     pic = cv2.cvtColor(pic, cv2.COLOR_BGR2GRAY)
@@ -111,6 +116,8 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
     pic = pic[120:330,160:480]
     pic = cv2.Canny(pic, 100, 170)
     pic = cv2.dilate(pic, kernel, iterations=1)
+
+    #finds the midpoint of the line to determine where to move
     pixels = np.argwhere(pic == 255)
     mean = np.mean(pixels,axis=0)
     floor = mean.astype(int)
@@ -129,6 +136,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
     win = "Frame"
     keys = KeyControl(win)
         
+    #if and else statements that determine which way the robot should move 
     if x >= 140 and x <= 180:
         keys.arrow('f')
     if x < 140:
